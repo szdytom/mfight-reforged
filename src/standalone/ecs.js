@@ -1,117 +1,37 @@
 /* Adapted from ecs.js and treap.js in the Open Arras Project by szdytom, publish under the Apache License 2.0 */
 
-// FHQ Treap impl a set
+import { PriorityQueue } from './priority_queue.js';
 
-class TreapNode {
-	constructor(val) {
-		this.value = val;
-		this.left = null;
-		this.right = null;
-		this.sz = 1;
-		this.rd = Math.random();
-	}
-
-	update() {
-		this.sz = (this.left?.sz || 0) + (this.right?.sz || 0) + 1;
-	}
-
-	static splitBySize(rt, k) {
-		if (rt == null) {
-			return [null, null];
-		}
-
-		let x, y;
-		if ((rt.left?.sz || 0) + 1 <= k) {
-			x = rt;
-			[rt.right, y] = TreapNode.splitBySize(rt.right, k - (rt.left?.sz || 0) - 1);
-		} else {
-			y = rt;
-			[x, rt.left] = TreapNode.splitBySize(rt.left, k);
-		}
-		rt.update();
-		return [x, y];
-	}
-
-	static splitByValue(rt, v) {
-		if (rt == null) {
-			return [null, null];
-		}
-
-		let x, y;
-		if (rt.value <= v) {
-			x = rt;
-			[rt.right, y] = TreapNode.splitByValue(rt.right, v);
-		} else {
-			y = rt;
-			[x, rt.left] = TreapNode.splitByValue(rt.left, v);
-		}
-		rt.update();
-		return [x, y];
-	}
-
-	static merge(x, y) {
-		if (x == null) {
-			return y;
-		} else if (y == null) {
-			return x;
-		}
-
-		if (x.rd < y.rd) {
-			y.left = TreapNode.merge(x, y.left);
-			y.update();
-			return y;
-		}
-
-		x.right = TreapNode.merge(x.right, y);
-		x.update();
-		return x;
-	}
-
-	static forEach(rt, func) {
-		if (rt == null) {
-			return;
-		}
-
-		TreapNode.forEach(rt.left, func);
-		func(rt.value);
-		TreapNode.forEach(rt.right, func);
-	}
-};
-
-class TreapSet {
+export class EntityRegistry extends EventTarget {
 	constructor() {
-		this.root = null;
-	}
-
-	insertRaw(v) {
-		let [x, y] = TreapNode.splitByValue(this.root, v);
-		this.root = TreapNode.merge(TreapNode.merge(x, new TreapNode(v)), y);
-		return this;
-	}
-
-	erase(v) {
-		let [x, p] = TreapNode.splitByValue(this.root, v - 1);
-		let [_, z] = TreapNode.splitByValue(p, v);
-		this.root = TreapNode.merge(x, z);
-		return this;
-	}
-
-	takeInstance() {
-		return this.root == null ? null : this.root.value;
-	}
-
-	forEach(func) {
-		TreapNode.forEach(this.root, func);
-		return this;
-	}
-};
-
-export class EntityRegistry {
-	constructor() {
-		this.free_ids = new TreapSet();
+		this.free_ids = new PriorityQueue();
 		this.signatures = [];
 		this.components = [];
 		this.component_map = new Map();
+		this.systems = [];
+		this.destroy_queue = [];
+	}
+
+	registerSystem(sys) {
+		this.systems.push(sys);
+	}
+
+	step(dt) {
+		for (const s of this.systems) {
+			s.call(this, dt);
+		}
+		this.commitDestory();
+	}
+
+	requestDestory(entity) {
+		this.destory_queue.push(entity);
+	}
+
+	commitDestory() {
+		for (const e of this.destory_queue) {
+			this.destory(e);
+		}
+		this.destory_queue = [];
 	}
 
 	requireComponentList(cname) {
@@ -160,13 +80,7 @@ export class EntityRegistry {
 	}
 
 	create() {
-		let id = this.free_ids.takeInstance();
-		if (id == null) {
-			id = this.signatures.length;
-		} else {
-			this.free_ids.erase(id);
-		}
-
+		let id = this.free_ids.empty() ? this.signatures.length : -this.free_ids.pop()[1];
 		this.signatures[id] = [];
 		return id;
 	}
@@ -178,7 +92,7 @@ export class EntityRegistry {
 		}
 
 		this.signatures[entity] = undefined;
-		this.free_ids.insertRaw(entity);
+		this.free_ids.push([null, -entity]);
 		return this;
 	}
 
