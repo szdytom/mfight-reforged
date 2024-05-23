@@ -1,0 +1,7 @@
+# Built Files
+build
+.xmake
+
+# Editors
+.vscode
+*.swp
