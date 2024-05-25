@@ -6,7 +6,7 @@ set_languages("c++20")
 set_targetdir("build")
 set_policy("build.warning", true)
 
-add_requires("entt 3.11", "libsdl 2.26", "libsdl_ttf 2.22", "fmt 10")
+add_requires("entt 3.x", "libsdl 2.x", "libsdl_ttf 2.x", "fmt 10.x", "spdlog 1.x")
 
 target("main")
 	set_default(true)
@@ -14,7 +14,7 @@ target("main")
 	add_files("src/*.cpp", "src/**/*.cpp")
 	add_includedirs("include/")
 
-	add_packages("entt", "libsdl", "libsdl_ttf", "fmt")
+	add_packages("entt", "libsdl", "libsdl_ttf", "fmt", "spdlog")
 	set_warnings("allextra")
 	if is_mode("release") then
 		set_strip("all")

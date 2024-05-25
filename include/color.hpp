@@ -14,25 +14,25 @@ public:
 		static constexpr int ALPHA = 3;
 	};
 
-	Color();
-	Color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a);
+	Color() noexcept;
+	Color(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a) noexcept;
 
-	std::uint8_t operator[](int component) const;
-	std::uint8_t& operator[](int component);
+	std::uint8_t operator[](int component) const noexcept;
+	std::uint8_t& operator[](int component) noexcept;
 
-	std::uint8_t r() const;
-	std::uint8_t& r();
+	std::uint8_t r() const noexcept;
+	std::uint8_t& r() noexcept;
 
-	std::uint8_t g() const;
-	std::uint8_t& g();
+	std::uint8_t g() const noexcept;
+	std::uint8_t& g() noexcept;
 
-	std::uint8_t b() const;
-	std::uint8_t& b();
+	std::uint8_t b() const noexcept;
+	std::uint8_t& b() noexcept;
 
-	std::uint8_t a() const;
-	std::uint8_t& a();
+	std::uint8_t a() const noexcept;
+	std::uint8_t& a() noexcept;
 
-	static Color from_hsv(float h, float s, float v, float a);
+	static Color from_hsv(float h, float s, float v, float a) noexcept;
 
 private:
 	std::uint8_t c[4];

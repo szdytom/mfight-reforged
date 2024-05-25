@@ -2,6 +2,10 @@
 build
 .xmake
 
+# Generated Files
+compile_flags.txt
+compile_commands.json
+
 # Editors
 .vscode
 *.swp

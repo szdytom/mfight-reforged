@@ -114,11 +114,11 @@ bool RenderWindow::have_event() const {
 }
 
 void swap(RenderWindow &lhs, RenderWindow &rhs) noexcept {
-    using std::swap;
-    swap(lhs._window, rhs._window);
-    swap(lhs._renderer, rhs._renderer);
-    swap(lhs._width, rhs._width);
-    swap(lhs._height, rhs._height);
+	using std::swap;
+	swap(lhs._window, rhs._window);
+	swap(lhs._renderer, rhs._renderer);
+	swap(lhs._width, rhs._width);
+	swap(lhs._height, rhs._height);
 }
 
 } // namespace mfight

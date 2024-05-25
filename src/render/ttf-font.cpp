@@ -43,8 +43,8 @@ Surface TTFFont::render_text(std::string_view text, Color color) const {
 }
 
 void swap(TTFFont &lhs, TTFFont &rhs) noexcept {
-    using std::swap;
-    swap(lhs._font, rhs._font);
+	using std::swap;
+	swap(lhs._font, rhs._font);
 }
 
 } // namespace mfight
