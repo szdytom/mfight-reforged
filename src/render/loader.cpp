@@ -5,10 +5,9 @@
 namespace {
 
 class SDLLoader {
-// private:
 public:
-	SDLLoader(const SDLLoader&) = delete;
-	SDLLoader& operator=(const SDLLoader&) = delete;
+	SDLLoader(const SDLLoader &) = delete;
+	SDLLoader &operator=(const SDLLoader &) = delete;
 
 	SDLLoader() {
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
@@ -28,4 +27,4 @@ public:
 
 SDLLoader _sdl_loader;
 
-}  // namespace
+} // namespace

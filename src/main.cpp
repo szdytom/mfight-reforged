@@ -18,19 +18,19 @@ int main() {
 			if (event.type == SDL_QUIT) {
 				should_close = true;
 			} else if (event.type == SDL_KEYDOWN) {
-                fmt::print("Key: {}\n", event.key.keysym.sym);
+				fmt::print("Key: {}\n", event.key.keysym.sym);
 				if (event.key.keysym.sym == SDLK_ESCAPE) {
 					should_close = true;
-                } else if (event.key.keysym.sym == SDLK_LEFT) {
-                    cur_x -= 5;
-                } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                    cur_x += 5;
-                } else if (event.key.keysym.sym == SDLK_UP) {
-                    cur_y -= 5;
-                } else if (event.key.keysym.sym == SDLK_DOWN) {
-                    cur_y += 5;
-                }
-            }
+				} else if (event.key.keysym.sym == SDLK_LEFT) {
+					cur_x -= 5;
+				} else if (event.key.keysym.sym == SDLK_RIGHT) {
+					cur_x += 5;
+				} else if (event.key.keysym.sym == SDLK_UP) {
+					cur_y -= 5;
+				} else if (event.key.keysym.sym == SDLK_DOWN) {
+					cur_y += 5;
+				}
+			}
 		}
 	}
 	return 0;

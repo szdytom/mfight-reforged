@@ -7,6 +7,7 @@ extern "C" {
 }
 
 #include "color.hpp"
+#include "defs.h"
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -17,12 +18,12 @@ namespace mfight {
 class Surface {
 	SDL_Surface *_surface;
 
-	void _check_surface() const;
-	void _check_range(int x, int y) const;
+	void _check_surface() const MFIGHT_DEBUG_EXCEPT;
+	void _check_range(int x, int y) const MFIGHT_DEBUG_EXCEPT;
 
 public:
-	Surface(SDL_Surface *surface);
-	~Surface();
+	Surface(SDL_Surface *surface) noexcept;
+	~Surface() noexcept;
 
 	// move constructor
 	Surface(Surface &&other) noexcept;
@@ -34,8 +35,14 @@ public:
 
 	SDL_Surface *native_handle() const noexcept;
 	bool empty() const noexcept;
-	int width() const;
-	int height() const;
+
+	int width() const MFIGHT_DEBUG_EXCEPT;
+	int height() const MFIGHT_DEBUG_EXCEPT;
+
+	bool must_lock() const MFIGHT_DEBUG_EXCEPT;
+	void lock() const;
+	void unlock() const;
+
 	Color pixel(int x, int y) const;
 	void set_pixel(int x, int y, Color color) const;
 

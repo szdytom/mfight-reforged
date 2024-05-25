@@ -39,15 +39,15 @@ int Surface::height() const {
 	return _surface->h;
 }
 
-void Surface::_check_surface() const {
+void Surface::_check_surface() const MFIGHT_DEBUG_EXCEPT {
 #ifdef DEBUG
 	if (_surface == nullptr) {
-		throw std::runtime_error("Surface is null");
+		throw std::logic_error("Surface is null");
 	}
 #endif // DEBUG
 }
 
-void Surface::_check_range(int x, int y) const {
+void Surface::_check_range([[maybe_unused]] int x, [[maybe_unused]] int y) const MFIGHT_DEBUG_EXCEPT {
 #ifdef DEBUG
 	_check_surface();
 	if (x < 0 || x >= _surface->w || y < 0 || y >= _surface->h) {
@@ -57,19 +57,32 @@ void Surface::_check_range(int x, int y) const {
 #endif // DEBUG
 }
 
+bool Surface::must_lock() const MFIGHT_DEBUG_EXCEPT {
+	_check_surface();
+	return SDL_MUSTLOCK(_surface);
+}
+
+void Surface::lock() const {
+	_check_surface();
+	if (!must_lock()) {
+		return;
+	}
+	if (SDL_LockSurface(_surface) != 0) {
+		throw std::runtime_error(fmt::format("Failed to lock surface: {}", SDL_GetError()));
+	}
+}
+
+void Surface::unlock() const {
+	_check_surface();
+	SDL_UnlockSurface(_surface);
+}
+
 Color Surface::pixel(int x, int y) const {
 	_check_range(x, y);
 
-	bool need_lock = SDL_MUSTLOCK(_surface);
-	if (need_lock) {
-		SDL_LockSurface(_surface);
-	}
-
+	lock();
 	uint32_t pixel_value = static_cast<uint32_t *>(_surface->pixels)[y * _surface->pitch / 4 + x];
-
-	if (need_lock) {
-		SDL_UnlockSurface(_surface);
-	}
+	unlock();
 
 	uint8_t r, g, b, a;
 	SDL_GetRGBA(pixel_value, _surface->format, &r, &g, &b, &a);
@@ -81,15 +94,9 @@ void Surface::set_pixel(int x, int y, Color color) const {
 
 	uint32_t pixel_value = SDL_MapRGBA(_surface->format, color.r(), color.g(), color.b(), color.a());
 
-	bool need_lock = SDL_MUSTLOCK(_surface);
-	if (need_lock) {
-		SDL_LockSurface(_surface);
-	}
+	lock();
 	static_cast<uint32_t *>(_surface->pixels)[y * _surface->pitch / 4 + x] = pixel_value;
-
-	if (need_lock) {
-		SDL_UnlockSurface(_surface);
-	}
+	unlock();
 }
 
 void Surface::fill(Color color) const {
